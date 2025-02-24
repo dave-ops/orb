@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matrix Falling Letters</title>
+    <title>Matrix Falling Letters - Codeforge</title>
     <style>
         body {
             margin: 0;
@@ -11,7 +11,6 @@
             background: black;
             overflow: hidden;
         }
-
         canvas {
             display: block;
         }
@@ -24,53 +23,70 @@
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
 
-        // Set canvas size to full window
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        // Characters to display (Matrix-style)
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?';
+        const targetWord = 'codeforge';
         const fontSize = 16;
-        const columns = canvas.width / fontSize;
+        const columns = Math.floor(canvas.width / fontSize);
 
-        // Array to hold the position of drops
-        const drops = Array(Math.floor(columns)).fill(1);
+        const drops = Array(columns).fill(0);
+        const brightness = Array(columns).fill(0); // Track brightness for each column
+
+        const centerRow = Math.floor(canvas.height / (fontSize * 2));
+        const wordLength = targetWord.length;
+        const centerColumn = Math.floor((columns - wordLength) / 2);
 
         function draw() {
-            // Create semi-transparent black background for trailing effect
             ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Set green text color
-            ctx.fillStyle = '#0f0';
             ctx.font = fontSize + 'px monospace';
 
-            // Draw each drop
             for (let i = 0; i < drops.length; i++) {
-                // Random character from letters string
-                const text = letters[Math.floor(Math.random() * letters.length)];
-                // Draw the character
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                let text;
+                const yPos = drops[i] * fontSize;
+                const isCenterWord = i >= centerColumn && i < centerColumn + wordLength;
+                const isCenterRow = Math.abs(drops[i] - centerRow) < 2;
 
-                // Randomly reset drop to top when it reaches bottom
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
+                if (isCenterWord && isCenterRow) {
+                    text = targetWord[i - centerColumn];
+                    // Increase brightness when reaching center
+                    brightness[i] = Math.min(brightness[i] + 0.2, 1);
+                } else {
+                    text = letters[Math.floor(Math.random() * letters.length)];
+                    // Fade brightness when leaving center
+                    brightness[i] = Math.max(brightness[i] - 0.05, 0);
                 }
 
-                // Move drop down
-                drops[i]++;
+                // Set color based on brightness (0 for normal green, 1 for bright white)
+                ctx.fillStyle = `rgb(${Math.floor(brightness[i] * 255)}, ${Math.floor(255 - brightness[i] * 100)}, 0)`;
+                ctx.fillText(text, i * fontSize, yPos);
+
+                // Move drops down randomly
+                drops[i] += Math.random() * 0.5 + 0.5;
+
+                // Reset when reaching bottom
+                if (yPos > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                    brightness[i] = 0;
+                }
             }
         }
 
-        // Animation loop
         setInterval(draw, 33);
 
-        // Resize canvas when window resizes
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            drops.length = Math.floor(canvas.width / fontSize);
-            drops.fill(1);
+            const newColumns = Math.floor(canvas.width / fontSize);
+            drops.length = newColumns;
+            brightness.length = newColumns;
+            drops.fill(0);
+            brightness.fill(0);
+            centerRow = Math.floor(canvas.height / (fontSize * 2));
+            centerColumn = Math.floor((newColumns - wordLength) / 2);
         });
     </script>
 </body>

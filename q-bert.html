@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Q*bert</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            padding-top: 20px;
+        }
+        #game-container {
+            position: relative;
+            width: 600px;
+            height: 600px;
+            margin: 0 auto;
+        }
+        .cube {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: #ff5555; /* Red cubes initially */
+            transform: skewY(-30deg) skewX(30deg);
+            border: 2px solid #ffffff;
+            transition: background-color 0.2s;
+        }
+        .cube.active {
+            background-color: #55ff55; /* Green when hopped on */
+        }
+        #qbert {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: orange;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        #score {
+            font-size: 24px;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Q*BERT</h1>
+    <div id="score">Score: 0</div>
+    <div id="game-container"></div>
+    <p>Use Arrow Keys to move Q*bert!</p>
+
+    <script>
+        const container = document.getElementById('game-container');
+        const scoreDisplay = document.getElementById('score');
+        let score = 0;
+        const gridSize = 7; // 7 cubes at the base, like the original
+        const cubeSize = 60; // Pixel size for spacing
+        let qbertPos = { row: 0, col: 0 }; // Start at the top
+        const cubes = [];
+
+        // Create the pyramid of cubes
+        function createPyramid() {
+            for (let row = 0; row < gridSize; row++) {
+                cubes[row] = [];
+                for (let col = 0; col < gridSize - row; col++) {
+                    const cube = document.createElement('div');
+                    cube.classList.add('cube');
+                    const x = 300 + (col - row / 2) * cubeSize; // Center and offset for isometric look
+                    const y = 100 + row * (cubeSize / 2); // Stack rows
+                    cube.style.left = `${x}px`;
+                    cube.style.top = `${y}px`;
+                    container.appendChild(cube);
+                    cubes[row][col] = cube;
+                }
+            }
+        }
+
+        // Create Q*bert character
+        function createQbert() {
+            const qbert = document.createElement('div');
+            qbert.id = 'qbert';
+            container.appendChild(qbert);
+            updateQbertPosition();
+        }
+
+        // Update Q*bert's position on the grid
+        function updateQbertPosition() {
+            const qbert = document.getElementById('qbert');
+            const x = 300 + (qbertPos.col - qbertPos.row / 2) * cubeSize + 10; // Center on cube
+            const y = 100 + qbertPos.row * (cubeSize / 2) - 10; // Adjust for height
+            qbert.style.left = `${x}px`;
+            qbert.style.top = `${y}px`;
+        }
+
+        // Handle movement and game logic
+        function moveQbert(direction) {
+            let newRow = qbertPos.row;
+            let newCol = qbertPos.col;
+
+            switch (direction) {
+                case 'ArrowUp': // Up-right
+                    newRow--;
+                    newCol++;
+                    break;
+                case 'ArrowDown': // Down-left
+                    newRow++;
+                    newCol--;
+                    break;
+                case 'ArrowLeft': // Up-left
+                    newRow--;
+                    newCol--;
+                    break;
+                case 'ArrowRight': // Down-right
+                    newRow++;
+                    newCol++;
+                    break;
+            }
+
+            // Check if the new position is valid
+            if (
+                newRow >= 0 && newRow < gridSize &&
+                newCol >= 0 && newCol < gridSize - newRow
+            ) {
+                qbertPos = { row: newRow, col: newCol };
+                updateQbertPosition();
+
+                // Change cube color and update score
+                const cube = cubes[newRow][newCol];
+                if (!cube.classList.contains('active')) {
+                    cube.classList.add('active');
+                    score += 25; // Points per cube
+                    scoreDisplay.textContent = `Score: ${score}`;
+                }
+
+                // Check for win condition (all cubes active)
+                if (checkWin()) {
+                    alert('Congratulations! You won!');
+                    resetGame();
+                }
+            } else {
+                // Fall off the pyramid
+                alert('Q*bert fell off! Game Over.');
+                resetGame();
+            }
+        }
+
+        // Check if all cubes are active
+        function checkWin() {
+            for (let row = 0; row < gridSize; row++) {
+                for (let col = 0; col < gridSize - row; col++) {
+                    if (!cubes[row][col].classList.contains('active')) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        // Reset the game
+        function resetGame() {
+            score = 0;
+            scoreDisplay.textContent = `Score: ${score}`;
+            qbertPos = { row: 0, col: 0 };
+            updateQbertPosition();
+            cubes.forEach(row => row.forEach(cube => cube.classList.remove('active')));
+        }
+
+        // Initialize the game
+        createPyramid();
+        createQbert();
+
+        // Handle keyboard input
+        document.addEventListener('keydown', (event) => {
+            moveQbert(event.key);
+        });
+    </script>
+</body>
+</html>

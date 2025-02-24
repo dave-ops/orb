@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Thermonuclear War</title>
+    <style>
+        body {
+            background-color: black;
+            color: lime;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            padding-top: 20px;
+        }
+        #terminal {
+            width: 80%;
+            margin: 10px auto;
+            text-align: left;
+            padding: 10px;
+            border: 2px solid lime;
+            height: 150px;
+            overflow-y: auto;
+        }
+        #map-container {
+            width: 80%;
+            margin: 0 auto;
+            position: relative;
+        }
+        svg {
+            width: 100%;
+            height: auto;
+        }
+        input, button {
+            background-color: black;
+            color: lime;
+            border: 1px solid lime;
+            font-family: 'Courier New', monospace;
+            padding: 5px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: lime;
+            color: black;
+            cursor: pointer;
+        }
+        .missile {
+            fill: red;
+            stroke: red;
+            stroke-width: 1;
+        }
+    </style>
+</head>
+<body>
+    <h1>GLOBAL THERMONUCLEAR WAR</h1>
+    <div id="terminal">
+        <p>WOULD YOU LIKE TO PLAY A GAME?</p>
+        <p>SELECT TARGET COUNTRY:</p>
+        <p>1. USA  2. RUSSIA  3. CHINA  4. RANDOM</p>
+    </div>
+    <div id="map-container">
+        <!-- Simplified SVG world map -->
+        <svg id="world-map" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet">
+            <!-- Basic continents outline (simplified) -->
+            <path d="M200,200 C300,150 400,200 500,250 C600,300 700,250 800,200 C900,150 950,200 1000,250 L1000,500 L0,500 L0,250 C50,200 100,150 200,200" fill="#333" />
+            <!-- USA (approximate) -->
+            <circle id="usa" cx="250" cy="200" r="10" fill="lime" />
+            <!-- Russia (approximate) -->
+            <circle id="russia" cx="700" cy="150" r="10" fill="lime" />
+            <!-- China (approximate) -->
+            <circle id="china" cx="800" cy="250" r="10" fill="lime" />
+        </svg>
+    </div>
+    <input type="text" id="input" placeholder="ENTER COMMAND" onkeydown="if(event.key === 'Enter') processCommand()">
+    <button onclick="processCommand()">LAUNCH</button>
+
+    <script>
+        const terminal = document.getElementById('terminal');
+        const input = document.getElementById('input');
+        const svg = document.getElementById('world-map');
+
+        function addText(text) {
+            const p = document.createElement('p');
+            p.textContent = text;
+            terminal.appendChild(p);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function launchMissile(targetX, targetY) {
+            const missile = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            missile.setAttribute('class', 'missile');
+            missile.setAttribute('r', '5');
+            missile.setAttribute('cx', '500'); // Start from center of map
+            missile.setAttribute('cy', '400'); // Bottom of map
+            svg.appendChild(missile);
+
+            let startX = 500, startY = 400;
+            let dx = (targetX - startX) / 50;
+            let dy = (targetY - startY) / 50;
+            let step = 0;
+
+            const animate = setInterval(() => {
+                step++;
+                let newX = startX + dx * step;
+                let newY = startY + dy * step;
+                missile.setAttribute('cx', newX);
+                missile.setAttribute('cy', newY);
+
+                if (step >= 50) {
+                    clearInterval(animate);
+                    svg.removeChild(missile);
+                    addText('IMPACT DETECTED. RETALIATION INCOMING.');
+                }
+            }, 20);
+        }
+
+        function processCommand() {
+            const command = input.value.toUpperCase().trim();
+            input.value = '';
+
+            if (command === '1' || command === 'USA') {
+                addText('TARGETING: USA');
+                addText('LAUNCH SEQUENCE INITIATED...');
+                launchMissile(250, 200); // USA coordinates
+            } else if (command === '2' || command === 'RUSSIA') {
+                addText('TARGETING: RUSSIA');
+                addText('LAUNCH SEQUENCE INITIATED...');
+                launchMissile(700, 150); // Russia coordinates
+            } else if (command === '3' || command === 'CHINA') {
+                addText('TARGETING: CHINA');
+                addText('LAUNCH SEQUENCE INITIATED...');
+                launchMissile(800, 250); // China coordinates
+            } else if (command === '4' || command === 'RANDOM') {
+                addText('TARGETING: RANDOM COORDINATES');
+                addText('LAUNCH SEQUENCE INITIATED...');
+                const randomX = Math.random() * 900 + 50;
+                const randomY = Math.random() * 400 + 50;
+                launchMissile(randomX, randomY);
+            } else if (command === 'EXIT' || command === 'QUIT') {
+                addText('THE ONLY WINNING MOVE IS NOT TO PLAY.');
+                addText('SYSTEM SHUTTING DOWN.');
+            } else {
+                addText('INVALID COMMAND. PLEASE SELECT 1-4 OR TYPE EXIT.');
+            }
+        }
+    </script>
+</body>
+</html>
