@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoicePixel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #canvas {
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <script>
+        // Get the canvas element
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Initialize speech recognition
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        // Start speech recognition
+        recognition.start();
+
+        // Handle speech recognition results
+        recognition.onresult = function(event) {
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    const command = event.results[i][0].transcript.trim().toLowerCase();
+                    processCommand(command);
+                }
+            }
+        };
+
+        // Function to process voice commands
+        function processCommand(command) {
+            console.log('Command:', command);
+
+            // Simple command parsing
+            if (command.startsWith('draw')) {
+                const parts = command.split(' ');
+                if (parts.length > 1) {
+                    const shape = parts[1];
+                    switch (shape) {
+                        case 'circle':
+                            drawCircle();
+                            break;
+                        case 'square':
+                            drawSquare();
+                            break;
+                        case 'line':
+                            drawLine();
+                            break;
+                        default:
+                            console.log('Unknown shape:', shape);
+                    }
+                }
+            }
+        }
+
+        // Drawing functions
+        function drawCircle() {
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 50, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
+
+        function drawSquare() {
+            ctx.strokeRect(canvas.width / 2 - 50, canvas.height / 2 - 50, 100, 100);
+        }
+
+        function drawLine() {
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.stroke();
+        }
+    </script>
+</body>
+</html>
