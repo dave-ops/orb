@@ -21,9 +21,37 @@ async function testFileRead() {
 
 testFileRead();
 
+/**
+ * Removes all unnecessary whitespace between HTML tags and HTML comments.
+ *
+ * @param {string} htmlString - The input HTML string to process.
+ * @returns {string} The processed HTML string with whitespace and comments removed between tags.
+ * @throws {Error} If the input is not a string.
+ */
+function removeWhitespaceBetweenHtmlTags(htmlString) {
+    // Check if the input is a string
+    if (typeof htmlString !== 'string') {
+        throw new Error('Input must be a string');
+    }
+
+    // Regular expression to match any whitespace between > and <
+    // This regex matches one or more whitespace characters, including spaces, tabs, and newlines
+    const whitespaceRegex = />(\s+)</g;
+
+    // Regular expression to match HTML comments
+    const commentRegex = /<!--[\s\S]*?-->/g;
+
+    // First, remove all HTML comments
+    let result = htmlString.replace(commentRegex, '');
+
+    // Then, replace all whitespace between > and < with an empty string
+    result = result.replace(whitespaceRegex, '><');
+
+    return result;
+}
+
 // Function to replace tokens in HTML with values from JSON
 function replaceTokens(html, jsonData) {
-    console.log(html);
     console.log('Starting token replacement');
     for (const [key, value] of Object.entries(jsonData)) {
         const token = `${key}`;
@@ -58,7 +86,8 @@ app.get('/', async (req, res) => {
 
         console.log('Replacing tokens in HTML');
         html = replaceTokens(html, jsonData);
-        console.log('Tokens replaced successfully');
+        html = removeWhitespaceBetweenHtmlTags(html);
+        console.log(html);
 
         res.send(html);
         console.log('Response sent successfully');
