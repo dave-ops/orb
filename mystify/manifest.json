@@ -1,22 +1,22 @@
 {
-    "manifest_version": 3,
-    "name": "Audio Visualizer",
-    "version": "1.0",
-    "permissions": ["tabCapture", "activeTab", "scripting"],
-    "action": {
-      "default_popup": "popup.html"
-    },
-    "background": {
-      "service_worker": "background.js"
-    },
-    "content_scripts": [
-      {
-        "matches": ["<all_urls>"],
-        "js": ["content.js"],
-        "run_at": "document_start"  // Ensure content script runs as early as possible
-      }
-    ],
-    "host_permissions": [
-      "<all_urls>"
-    ]
-  }
+  "manifest_version": 3,
+  "name": "Audio Visualizer",
+  "version": "1.0",
+  "permissions": ["tabCapture", "activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start" 
+    }
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ]
+}

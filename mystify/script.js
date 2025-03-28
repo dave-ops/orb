@@ -1,17 +1,20 @@
 // script.js
+// 20230515 14:40 GROK Added logging, removed error handling, hardcoded tabId
 
 // Create an AudioContext
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
 // Function to capture audio from a specific tab
 function captureTabAudio(tabId) {
+    console.log('Attempting to capture audio from tab:', tabId);
     chrome.tabCapture.capture({
         audio: true,
         video: false,
         targetTabId: tabId
     }, stream => {
+        console.log('Stream captured:', stream);
         if (!stream) {
-            console.error('Failed to capture tab audio');
+            console.log('Failed to capture tab audio');
             return;
         }
 
@@ -83,9 +86,12 @@ function captureTabAudio(tabId) {
 
 // Listen for messages from the content script
 window.addEventListener("message", (event) => {
+    console.log('Received message in injected script:', event.data);
     if (event.source === window && event.data.type && event.data.type === "FROM_EXTENSION") {
         if (event.data.action === 'startCapture') {
-            captureTabAudio(event.data.tabId);
+            // Dirty solution: Use a hardcoded tabId if not provided
+            const tabId = event.data.tabId || 1; // Assuming tabId 1 as a fallback
+            captureTabAudio(tabId);
         }
     }
 });
