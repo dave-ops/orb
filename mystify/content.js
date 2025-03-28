@@ -1,5 +1,6 @@
 // content.js
 // 20230515 14:35 GROK Added logging, removed error handling, hardcoded tabId
+// 20230516 10:05 GROK Simplified content script, added more logging, removed error handling
 
 console.log('Content script loaded');
 
