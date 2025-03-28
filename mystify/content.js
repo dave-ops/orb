@@ -1,5 +1,8 @@
 // content.js
 
+// Log when content script is loaded
+console.log('Content script loaded');
+
 // Listen for messages from the popup script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'startCapture') {

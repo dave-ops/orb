@@ -15,3 +15,8 @@ draw a flat white symmetrical 2d abstract minimalist icon of a hooded mind flaye
 show just the outline of the hood and tentacles, and cutouts for the eyes.
 no internal details. 
 just the outline filled with white aginst a dark solid background
+
+draw a flat white symmetrical 2d abstract minimalist icon of a hooded mind flayer from the dungeons and dragons monster manual.
+
+no details other then the hood, tentacles and cutouts for the eyes.
+final product will be just the solid shape filled with white. the background is dark and solid

@@ -1,3 +1,5 @@
+// script.js
+
 // Create an AudioContext
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -21,8 +23,32 @@ function captureTabAudio(tabId) {
         source.connect(analyser);
 
         // Get the visualizer element
-        const visualizer = document.getElementById('visualizer');
-        const bar = document.getElementById('bar');
+        let visualizer = document.getElementById('visualizer');
+        let bar = document.getElementById('bar');
+
+        // If visualizer doesn't exist, create it
+        if (!visualizer) {
+            visualizer = document.createElement('div');
+            visualizer.id = 'visualizer';
+            visualizer.style.width = '50px';
+            visualizer.style.height = '300px';
+            visualizer.style.backgroundColor = '#ddd';
+            visualizer.style.borderRadius = '10px';
+            visualizer.style.overflow = 'hidden';
+            visualizer.style.position = 'relative';
+
+            bar = document.createElement('div');
+            bar.id = 'bar';
+            bar.style.width = '100%';
+            bar.style.height = '0';
+            bar.style.backgroundColor = '#4CAF50';
+            bar.style.position = 'absolute';
+            bar.style.bottom = '0';
+            bar.style.transition = 'height 0.1s ease-out';
+
+            visualizer.appendChild(bar);
+            document.body.appendChild(visualizer);
+        }
 
         // Function to update the visualizer
         function updateVisualizer() {
@@ -39,10 +65,10 @@ function captureTabAudio(tabId) {
             const height = (average / 255) * 100;
 
             // Update the bar height
-            bar.style.height = `${height}%`;
+            bar.style.height = height + '%';
 
             // Request the next animation frame
-            Unhandled exception. requestAnimationFrame(updateVisualizer);
+            requestAnimationFrame(updateVisualizer);
         }
 
         // Start the animation
