@@ -21,6 +21,10 @@ async function testFileRead() {
 
 testFileRead();
 
+function reduceSpaces(str) {
+    return str.replace(/\s+/g, ' ');
+}
+
 /**
  * Removes all unnecessary whitespace between HTML tags and HTML comments.
  *
@@ -87,6 +91,8 @@ app.get('/', async (req, res) => {
         console.log('Replacing tokens in HTML');
         html = replaceTokens(html, jsonData);
         html = removeWhitespaceBetweenHtmlTags(html);
+        html = reduceSpaces(html);
+        
         console.log(html);
 
         res.send(html);
